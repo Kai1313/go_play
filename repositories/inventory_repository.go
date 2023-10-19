@@ -54,7 +54,7 @@ func (r *InventoryRepository) Create(inventory *models.Inventory) (*models.Inven
 func (r *InventoryRepository) GetLast() (*models.Inventory, error) {
 	var lastInventory models.Inventory
     // Order the results in descending order of inventory_id and select the first record.
-    result := r.db.Order("inventory_id desc").First(&lastInventory)
+    result := r.db.Order("inventory_code desc").First(&lastInventory)
 
     if result.Error != nil {
         return nil, result.Error

@@ -1,0 +1,17 @@
+### Request 1 - Create Inventory 1
+POST localhost:8080/api/inventory
+Content-Type: application/json
+
+{
+  "inventory_code": "INV.00009",
+  "inventory_name": "Laptop Asus Yzzzz"
+}
+
+### Request 2 - Create Inventory 2
+POST localhost:8080/api/inventory
+Content-Type: application/json
+
+{
+  "inventory_code": "INV.00010",
+  "inventory_name": "Laptop HP Xyz"
+}

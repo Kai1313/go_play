@@ -61,8 +61,29 @@ func (h *InventoryHandler) CreateInventoryHandler(w http.ResponseWriter, r *http
 		log.Fatalf("Unable to decode the requested body. %v", err)
 	}
 
+	// Make an HTTP GET request to GetLastNumber API
+    resp, err := http.Get("http://localhost:8080/api/generateNumber/last/T02")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    defer resp.Body.Close()
+
+    // Decode the response from GetLastNumber
+    if resp.StatusCode != http.StatusOK {
+        http.Error(w, "Failed to get last number", resp.StatusCode)
+        return
+    }
+
+    var lastNumber Response
+    if err := json.NewDecoder(resp.Body).Decode(&lastNumber); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    lastNumberValue := lastNumber.Data.(string)
+
 	inventoryDB := models.Inventory{
-		InventoryCode: inventory.InventoryCode,
+		InventoryCode: lastNumberValue,
 		InventoryName: inventory.InventoryName,
 	}
 

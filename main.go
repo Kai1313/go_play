@@ -38,14 +38,16 @@ func main() {
 	}
 
 	// Auto migrate
-	if err := db.AutoMigrate(&models.Inventory{}); err != nil {
+	if err := db.AutoMigrate(&models.Inventory{}, &models.GenerateNumber{}); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
 	inventoryRepository := repositories.NewInventory(db)
+	genNumberRepository := repositories.NewGenerateNumber(db)
 
 	routers := mux.NewRouter()
 	router.InventoryRouter(*inventoryRepository, routers)
+	router.GenerateNumberRouter(*genNumberRepository, routers)
 
 	fmt.Printf("Main is running")
 	log.Fatal(http.ListenAndServe(":8080", routers))

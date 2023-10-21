@@ -16,5 +16,6 @@ func GenerateNumberRouter(repository repositories.GenerateNumberRepository, rout
 	router.HandleFunc("/api/generateNumber", GenerateNumberHandler.GetAllGenerateNumberHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/generateNumber", GenerateNumberHandler.CreateGenerateNumberHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/generateNumber/{id}", GenerateNumberHandler.ShowGenerateNumberHandler).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/generateNumber/last/{id}", GenerateNumberHandler.ShowLastGenerateNumberHandler).Methods("GET", "OPTIONS")
+	// router.HandleFunc("/api/generateNumber/last/{id}", GenerateNumberHandler.ShowLastGenerateNumberHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/generateNumber/last", GenerateNumberHandler.GetLastGenerateNumberHandler).Methods("POST", "OPTIONS")
 }

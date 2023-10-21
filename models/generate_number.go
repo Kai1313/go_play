@@ -15,3 +15,9 @@ type GenerateNumberJson struct {
 	TableData  string `json:"table_data"`
 	FieldData  string `json:"field_data"`
 }
+
+type RequestNumber struct {
+	ModuleID  string `json:"module_id"`
+	Source    string `json:"source"`
+	Warehouse string `json:"warehouse"`
+}

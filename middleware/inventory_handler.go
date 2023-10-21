@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"bytes"
 	"encoding/json"
 	"go_play/models"
 	"go_play/repositories"
@@ -62,25 +63,64 @@ func (h *InventoryHandler) CreateInventoryHandler(w http.ResponseWriter, r *http
 	}
 
 	// Make an HTTP GET request to GetLastNumber API
-    resp, err := http.Get("http://localhost:8080/api/generateNumber/last/T02")
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-    defer resp.Body.Close()
+	// resp, err := http.Get("http://localhost:8080/api/generateNumber/last/T02")
+	// if err != nil {
+	//     http.Error(w, err.Error(), http.StatusInternalServerError)
+	//     return
+	// }
+	// defer resp.Body.Close()
 
-    // Decode the response from GetLastNumber
-    if resp.StatusCode != http.StatusOK {
-        http.Error(w, "Failed to get last number", resp.StatusCode)
-        return
-    }
+	// // Decode the response from GetLastNumber
+	// if resp.StatusCode != http.StatusOK {
+	//     http.Error(w, "Failed to get last number", resp.StatusCode)
+	//     return
+	// }
 
-    var lastNumber Response
-    if err := json.NewDecoder(resp.Body).Decode(&lastNumber); err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-    lastNumberValue := lastNumber.Data.(string)
+	// var lastNumber Response
+	// if err := json.NewDecoder(resp.Body).Decode(&lastNumber); err != nil {
+	//     http.Error(w, err.Error(), http.StatusInternalServerError)
+	//     return
+	// }
+	// lastNumberValue := lastNumber.Data.(string)
+
+	// Define the payload for the POST request
+	payload := struct {
+		ModuleID  string `json:"module_id"`
+		Source    string `json:"source"`
+		Warehouse string `json:"warehouse"`
+	}{
+		ModuleID:  inventory.ModuleId,  // Set the desired module_id
+		Source:    inventory.Source, // Set the source value
+		Warehouse: inventory.Warehouse, // Set the warehouse value
+	}
+
+	// Serialize the payload to JSON
+	payloadJSON, err := json.Marshal(payload)
+	if err != nil {
+		http.Error(w, "Failed to serialize the request payload", http.StatusInternalServerError)
+		return
+	}
+
+	// Make an HTTP POST request to the GetLastNumber API
+	resp, err := http.Post("http://localhost:8080/api/generateNumber/last", "application/json", bytes.NewBuffer(payloadJSON))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Decode the response from GetLastNumber
+	if resp.StatusCode != http.StatusOK {
+		http.Error(w, "Failed to get last number", resp.StatusCode)
+		return
+	}
+
+	var lastNumber Response
+	if err := json.NewDecoder(resp.Body).Decode(&lastNumber); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	lastNumberValue := lastNumber.Data.(string)
 
 	inventoryDB := models.Inventory{
 		InventoryCode: lastNumberValue,

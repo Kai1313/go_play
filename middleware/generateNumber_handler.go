@@ -107,13 +107,51 @@ func (h *GenerateNumberHandler) GetAllGenerateNumberHandler(w http.ResponseWrite
 	json.NewEncoder(w).Encode(res)
 }
 
-func (h *GenerateNumberHandler) ShowLastGenerateNumberHandler(w http.ResponseWriter, r *http.Request) {
+// func (h *GenerateNumberHandler) ShowLastGenerateNumberHandler(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+// 	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+// 	moduleId := mux.Vars(r)["id"]
+
+// 	genNumberJson, err := services.GetLastNumber(moduleId, *h.repository)
+// 	if err != nil {
+// 		res := Response{
+// 			Success: false,
+// 			Message: err.Error(),
+// 		}
+
+// 		json.NewEncoder(w).Encode(res)
+// 		return
+// 	}
+
+// 	res := Response{
+// 		Success: true,
+// 		Data:    genNumberJson,
+// 	}
+// 	json.NewEncoder(w).Encode(res)
+// }
+
+func (h *GenerateNumberHandler) GetLastGenerateNumberHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	moduleId := mux.Vars(r)["id"]
+	// Parse the JSON request body
+    var requestBody models.RequestNumber
 
-	genNumberJson, err := services.GetLastNumber(moduleId, *h.repository)
+    decoder := json.NewDecoder(r.Body)
+    if err := decoder.Decode(&requestBody); err != nil {
+        res := Response{
+            Success: false,
+            Message: "Failed to parse JSON request",
+        }
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(res)
+        return
+    }
+
+	genNumberJson, err := services.GetLastNumber(&requestBody, *h.repository)
 	if err != nil {
 		res := Response{
 			Success: false,
